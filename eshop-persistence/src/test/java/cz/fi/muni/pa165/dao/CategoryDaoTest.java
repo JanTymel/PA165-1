@@ -129,12 +129,19 @@ public class CategoryDaoTest extends AbstractTransactionalTestNGSpringContextTes
 //		 Category.class).getResultList().get(0);
 
 		/** Solution by using LAZY fetch **/
+//		Session sess = (Session) em.getDelegate();
+//		Criteria c = sess.createCriteria(Category.class);
+//		Criteria products = c.createCriteria("products", "products", JoinType.LEFT_OUTER_JOIN);
+//		products.add(Restrictions.eq("name", "TV"));
+//		Category foundc = (Category) products.list().get(0);
+
+
+		/** Reproducer **/
 		Session sess = (Session) em.getDelegate();
 		Criteria c = sess.createCriteria(Category.class);
-		Criteria products = c.createCriteria("products", "products", JoinType.LEFT_OUTER_JOIN);
-		products.add(Restrictions.eq("name", "TV"));
-		Category foundc = (Category) products.list().get(0);
-
+		c.createAlias("products", "prods", JoinType.LEFT_OUTER_JOIN);
+		c.add(Restrictions.eq("prods.name", "TV"));
+		Category foundc = (Category) c.list().get(0);
 		
 		Assert.assertEquals(foundc.getProducts().size(), 2);
 	}
